@@ -2,6 +2,11 @@
 #include "Renderer.h"
 #include "Vulkan/vulkanControl.h"
 #include "Vulkan/VulkanDescriptorSet.h"
+#include "Vulkan/VulkanInstance.h"
+#include "Vulkan/VulkanDebugMessenger.h"
+#include "Vulkan/VulkanDevices.h"
+#include "Vulkan/VulkanCore.h"
+#include "Vulkan/VulkanSwapChain.h"
 
 
 namespace StudyEngine {
@@ -17,21 +22,26 @@ namespace StudyEngine {
         const std::string TEXTURE_PATH = "textures/viking_room.png";
 
         VulkanControl* vulkanController = VulkanControl::Get();
+        VulkanCore::Init();
+        //VulkanInstance::Init();
+        //VulkanDebugMessenger::Init();
+        //vulkanController->createSurface(WinApplication::GetWindow());
 
-        vulkanController->createInstance();
-        vulkanController->setupDebugMessenger();
-        vulkanController->createSurface(WinApplication::GetWindow());
-        vulkanController->pickPhysicalDevice();
-        vulkanController->createLogicalDevice();
-        vulkanController->createSwapChain();
-        vulkanController->createImageViews();
+        VulkanDevices::Init();
+        //vulkanController->pickPhysicalDevice();
+        //vulkanController->createLogicalDevice();
+        VulkanSwapChain::Init();
+        //vulkanController->createSwapChain();
+        VulkanSwapChain::CreateImageViews();
+        //vulkanController->createImageViews();
         vulkanController->createRenderPass();
         vulkanController->createDescriptorSetLayout();
         vulkanController->createPipelineLayout();
 
         vulkanController->createCommandPool();
-        vulkanController->createDepthResources();
-        vulkanController->createFramebuffers();
+        VulkanSwapChain::CreateDepthResources();
+        VulkanSwapChain::CreateFramebuffers();
+
         vulkanController->createTextureImage(TEXTURE_PATH);
         vulkanController->createTextureImageView();
         vulkanController->createTextureSampler();

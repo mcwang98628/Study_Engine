@@ -1,8 +1,9 @@
 #include "stdafx.h"
-#include "vulkan/vulkan.h"
+// #include "vulkan/vulkan.h"
 #include "VulkanDescriptorSet.h"
 #include "VulkanUniformBuffer.h"
 #include "vulkanControl.h"
+#include "vulkanDevices.h"
 using namespace StudyEngine;
 using namespace std;
 
@@ -20,7 +21,7 @@ VulkanDescriptorSet::VulkanDescriptorSet() : m_impl(std::make_unique<Impl>())
     allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
     allocInfo.pSetLayouts = layouts.data();
 
-    if (vkAllocateDescriptorSets(VulkanControl::Get()->GetDeviceContext(), &allocInfo, m_impl->descriptorSets.data()) != VK_SUCCESS) {
+    if (vkAllocateDescriptorSets(VulkanDevices::GetDevice(), &allocInfo, m_impl->descriptorSets.data()) != VK_SUCCESS) {
         throw std::runtime_error("failed to allocate descriptor sets!");
     }
 
@@ -41,7 +42,7 @@ VulkanDescriptorSet::VulkanDescriptorSet() : m_impl(std::make_unique<Impl>())
         descriptorWrites.descriptorCount = 1;
         descriptorWrites.pImageInfo = &imageInfo;
 
-        vkUpdateDescriptorSets(VulkanControl::Get()->GetDeviceContext(), 1, &descriptorWrites, 0, nullptr);
+        vkUpdateDescriptorSets(VulkanDevices::GetDevice(), 1, &descriptorWrites, 0, nullptr);
     }
 
 }
@@ -61,7 +62,7 @@ void VulkanDescriptorSet::UpdateDescriptorSet(VulkanUniformBuffer* uBuffer, uint
     descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     descriptorWrite.descriptorCount = 1;
     descriptorWrite.pBufferInfo = &uniformBufferInfo;
-    VkDevice dv = VulkanControl::Get()->GetDeviceContext();
+    VkDevice dv = VulkanDevices::GetDevice();
     vkUpdateDescriptorSets(dv, 1, &descriptorWrite, 0, nullptr);
 }
 

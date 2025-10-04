@@ -3,30 +3,16 @@
 #include "Application/WinApplication.h"
 #include <vulkan/vulkan.h>
 
-#ifdef NDEBUG
-    const bool enableValidationLayers = false;
-#else
-    const bool enableValidationLayers = true;
-#endif
-
-const std::vector<const char*> deviceExtensions = {
-    VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-    VK_KHR_MAINTENANCE1_EXTENSION_NAME
-};
-
-const std::vector<const char*> validationLayers = {
-    "VK_LAYER_KHRONOS_validation"
-};
-typedef struct QueueFamilyIndices{
+struct QueueFamilyIndices{
     std::optional<uint32_t> graphicsFamily;
     std::optional<uint32_t> presentFamily;
 
     bool isComplete() {
         return graphicsFamily.has_value() && presentFamily.has_value();
     }
-} QueueFamilyIndices;
+};
 
-struct SwapChainSupportDetails{
+struct SwapChainSupportDetails {
     VkSurfaceCapabilitiesKHR capabilities;
     std::vector<VkSurfaceFormatKHR> formats;
     std::vector<VkPresentModeKHR> presentModes;
@@ -43,34 +29,29 @@ namespace StudyEngine {
             
         }
 
-        VkDevice GetDeviceContext() { return device; }
+        //static VkPhysicalDevice physicalDevice;
+        //static VkDevice logicalDevice;
+        //static VkQueue graphicQueue;
+        //static VkQueue presentQueue;
+        //static VkSwapchainKHR swapChain;
+        //static VkFormat swapChainFormat;
+        //static VkExtent2D swapchainExtent;
+        //static VkCommandPool commandPool;
 
-        VkInstance instance;
-        VkSurfaceKHR surface;
-        VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-        VkDevice device;
-
-        VkQueue graphicsQueue;
-        VkQueue presentQueue;
-
-        VkSwapchainKHR swapChain;
-        std::vector<VkImage> swapChainImages;
-        VkFormat swapChainImageFormat;
-        VkExtent2D swapChainExtent;
-        std::vector<VkImageView> swapChainImageViews;
-        std::vector<VkFramebuffer> swapChainFramebuffers;
+        //VkPhysicalDevice physicalDevice;
+        //VkDevice logicalDevice;
+        // VkQueue graphicQueue;
+        // VkQueue presentQueue;
+        // VkSwapchainKHR swapChain;
+        // VkFormat swapChainFormat;
+        // VkExtent2D swapchainExtent;
+        VkCommandPool commandPool;
 
         VkRenderPass renderPass;
 
         VkDescriptorSetLayout descriptorSetLayout;
 
         VkPipelineLayout pipelineLayout;
-
-        VkCommandPool commandPool;
-
-        VkImage depthImage;
-        VkDeviceMemory depthImageMemory;
-        VkImageView depthImageView;
 
         VkImage textureImage;
         VkDeviceMemory textureImageMemory;
@@ -86,23 +67,28 @@ namespace StudyEngine {
         std::vector<VkSemaphore> renderFinishedSemaphores;
         std::vector<VkFence> inFlightFences;
 
+        // static void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
+        static SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
+        // static VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
+        QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+        VkQueue* GetGraphicsQueue() { return &graphicsQueue; }
+        VkQueue* GetPresentQueue() { return &presentQueue; }
+        VkRenderPass GetRenderPass() { return renderPass; }
+
+
+
         VulkanControl();
-        void createInstance();
-        void setupDebugMessenger();
-        void createSurface(GLFWwindow* window);
-        VkPhysicalDevice pickPhysicalDevice();
-        VkDevice createLogicalDevice();
-        void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
-        VkSwapchainKHR createSwapChain();
-        void createImageViews();
+        //void createSurface(GLFWwindow* window);
+        // void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
+        //void createImageViews();
         VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
         void createRenderPass();
         void createDescriptorSetLayout();
         void createPipelineLayout();
         void createCommandPool();
-        void createDepthResources();
+        // void createDepthResources();
         void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
-        void createFramebuffers();
+        //void createFramebuffers();
         void createTextureImage(std::string texturePath);
         void createTextureImageView();
         void createTextureSampler();
@@ -111,8 +97,6 @@ namespace StudyEngine {
         void createSyncObjects();
         void beginRenderPass(VkCommandBuffer commandBuffer);
         void endRenderPass(VkCommandBuffer commandBuffer);
-        void recreateSwapChain(GLFWwindow* window);
-        VkRenderPass getRenderPass() { return renderPass; }
         VkPipelineLayout getPipelineLayout() { return pipelineLayout; }
         void cleanUp();
 
@@ -125,6 +109,8 @@ namespace StudyEngine {
         VkCommandBuffer GetCommandBuffer();
         uint32_t GetCurrentFrameIndex();
         void WaitIdle();
+        VkFormat findDepthFormat();
+
 
         ~VulkanControl();
     private:
@@ -134,16 +120,17 @@ namespace StudyEngine {
 
         static VulkanControl* m_graphics;
 
-        VkDebugUtilsMessengerEXT debugMessenger;
 
         uint32_t currentFrame;
 
-        QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+        //VkInstance instance;
+        //VkSurfaceKHR surface;
+
+        VkQueue graphicsQueue;
+        VkQueue presentQueue;
+
         bool checkValidationLayerSupport();
         std::vector<const char*> getRequiredExtensions();
-        bool isDeviceSuitable(VkPhysicalDevice device);
-        bool checkDeviceExtensionSupport(VkPhysicalDevice device);
-        SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
         VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
         VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
         VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
@@ -154,10 +141,7 @@ namespace StudyEngine {
         void endSingleTimeCommands(VkCommandBuffer commandBuffer);
         void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
         uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-        VkFormat findDepthFormat();
-        void cleanupSwapChain();
-        void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
-        VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
+        //void cleanupSwapChain();
         static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
         void SubmitCommands();
         void PresentFrame();

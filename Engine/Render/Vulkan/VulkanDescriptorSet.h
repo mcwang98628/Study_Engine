@@ -1,6 +1,8 @@
 #pragma once 
 #include "stdafx.h"
 #include "VulkanUniformBuffer.h"
+//#include <vulkan/vulkan.h>
+
 using namespace std;
 
 typedef struct VkDescriptorSet_T* VkDescriptorSet;

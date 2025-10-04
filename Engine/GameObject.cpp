@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Render/Vulkan/VulkanControl.h"
 #include "Render/Renderer.h"
+#include "Render/Vulkan/VulkanDevices.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
@@ -13,7 +14,7 @@ namespace StudyEngine {
 
     GameObject::~GameObject()
     {
-        VkDevice device = VulkanControl::Get()->GetDeviceContext();
+        VkDevice device = VulkanDevices::GetDevice();
         delete m_pipeline;
 
         delete m_vertexBuffer;

@@ -31,8 +31,19 @@
 #define WIDTH 2560.f
 #define HEIGHT 1440.f
 
+#ifdef NDEBUG
+const bool enableValidationLayers = false;
+#else
+const bool enableValidationLayers = true;
+#endif
+
+const std::vector<const char*> validationLayers = {
+    "VK_LAYER_KHRONOS_validation"
+};
+
 #ifdef STUDY_ENGINE_EXPORTS
 #define STUDY_ENGINE __declspec(dllexport)
 #else
 #define STUDY_ENGINE __declspec(dllimport)
 #endif
+

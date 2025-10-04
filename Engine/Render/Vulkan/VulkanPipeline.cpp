@@ -2,6 +2,7 @@
 #include "VulkanPipeline.h"
 #include "VulkanControl.h"
 #include "readFile.h"
+#include "VulkanDevices.h"
 #include "VulkanVertexHelper.h"
 
 
@@ -18,7 +19,7 @@ namespace StudyEngine {
             createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
     
             VkShaderModule shaderModule;
-            if (vkCreateShaderModule(VulkanControl::Get()->GetDeviceContext(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
+            if (vkCreateShaderModule(VulkanDevices::GetDevice(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
                 throw std::runtime_error("failed to create shader module!");
             }
     
@@ -133,20 +134,20 @@ namespace StudyEngine {
         pipelineInfo.pColorBlendState = &colorBlending;
         pipelineInfo.pDynamicState = &dynamicState;
         pipelineInfo.layout = VulkanControl::Get()->getPipelineLayout();
-        pipelineInfo.renderPass = VulkanControl::Get()->getRenderPass();
+        pipelineInfo.renderPass = VulkanControl::Get()->GetRenderPass();
         pipelineInfo.subpass = 0;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-        if (vkCreateGraphicsPipelines(VulkanControl::Get()->GetDeviceContext(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_impl->pipeline) != VK_SUCCESS) {
+        if (vkCreateGraphicsPipelines(VulkanDevices::GetDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_impl->pipeline) != VK_SUCCESS) {
             throw std::runtime_error("failed to create graphics pipeline!");
         }
 
-        vkDestroyShaderModule(VulkanControl::Get()->GetDeviceContext(), fragShaderModule, nullptr);
-        vkDestroyShaderModule(VulkanControl::Get()->GetDeviceContext(), vertShaderModule, nullptr);
+        vkDestroyShaderModule(VulkanDevices::GetDevice(), fragShaderModule, nullptr);
+        vkDestroyShaderModule(VulkanDevices::GetDevice(), vertShaderModule, nullptr);
     }
     VulkanPipeline::~VulkanPipeline()
     {
-        vkDestroyPipeline(VulkanControl::Get()->GetDeviceContext(), m_impl->pipeline, nullptr);
+        vkDestroyPipeline(VulkanDevices::GetDevice(), m_impl->pipeline, nullptr);
     }
     void VulkanPipeline::BindCommandBuffer(VkCommandBuffer cmd)
     {

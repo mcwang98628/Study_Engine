@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "vulkanControl.h"
 #include "VulkanBuffer.h"
+#include "VulkanDevices.h"
 
 using namespace StudyEngine;
 
@@ -37,23 +38,23 @@ VulkanBuffer::VulkanBuffer(const void* data, size_t dataSize, type usage) : m_im
 
     void* tempData;
 
-    vkMapMemory(VulkanControl::Get()->GetDeviceContext(), stagingBufferMemory, 0, bufferSize, 0, &tempData);
+    vkMapMemory(VulkanDevices::GetDevice(), stagingBufferMemory, 0, bufferSize, 0, &tempData);
 
     memcpy(tempData, data, bufferSize);
-    vkUnmapMemory(VulkanControl::Get()->GetDeviceContext(), stagingBufferMemory);
+    vkUnmapMemory(VulkanDevices::GetDevice(), stagingBufferMemory);
 
     VkBufferUsageFlagBits bufferTypeBit = m_impl->ToVKBuffertType(usage);
     VulkanControl::Get()->createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | bufferTypeBit, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_impl->buffer, m_impl->bufferMemory);
 
     VulkanControl::Get()->copyBuffer(stagingBuffer, m_impl->buffer, bufferSize);
 
-    vkDestroyBuffer(VulkanControl::Get()->GetDeviceContext(), stagingBuffer, nullptr);
-    vkFreeMemory(VulkanControl::Get()->GetDeviceContext(), stagingBufferMemory, nullptr);
+    vkDestroyBuffer(VulkanDevices::GetDevice(), stagingBuffer, nullptr);
+    vkFreeMemory(VulkanDevices::GetDevice(), stagingBufferMemory, nullptr);
 }
 
 VulkanBuffer::~VulkanBuffer(){
-    vkDestroyBuffer(VulkanControl::Get()->GetDeviceContext(), m_impl->buffer, nullptr);
-    vkFreeMemory(VulkanControl::Get()->GetDeviceContext(), m_impl->bufferMemory, nullptr);
+    vkDestroyBuffer(VulkanDevices::GetDevice(), m_impl->buffer, nullptr);
+    vkFreeMemory(VulkanDevices::GetDevice(), m_impl->bufferMemory, nullptr);
 
 };
 

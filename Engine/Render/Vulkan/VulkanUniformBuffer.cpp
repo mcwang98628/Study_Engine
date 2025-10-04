@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "VulkanUniformBuffer.h"
 #include "vulkanControl.h"
+#include "VulkanDevices.h"
 using namespace StudyEngine;
 
 struct VulkanUniformBuffer::Impl
@@ -19,7 +20,7 @@ VulkanUniformBuffer::VulkanUniformBuffer(size_t dataSize) : m_impl(std::make_uni
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		m_impl->buffer,
 		m_impl->bufferMemory);
-	vkMapMemory(VulkanControl::Get()->GetDeviceContext(), m_impl->bufferMemory, 0, bufferSize, 0, &m_impl->bufferMapped);
+	vkMapMemory(VulkanDevices::GetDevice(), m_impl->bufferMemory, 0, bufferSize, 0, &m_impl->bufferMapped);
 
 }
 
@@ -36,6 +37,6 @@ VkBuffer VulkanUniformBuffer::GetBufferHandle() const
 
 VulkanUniformBuffer::~VulkanUniformBuffer()
 {
-	vkDestroyBuffer(VulkanControl::Get()->GetDeviceContext(), m_impl->buffer, nullptr);
-	vkFreeMemory(VulkanControl::Get()->GetDeviceContext(), m_impl->bufferMemory, nullptr);
+	vkDestroyBuffer(VulkanDevices::GetDevice(), m_impl->buffer, nullptr);
+	vkFreeMemory(VulkanDevices::GetDevice(), m_impl->bufferMemory, nullptr);
 }
